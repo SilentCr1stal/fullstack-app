@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
+const UserController = require("../controllers/user-controller");
 
 const destination = "uploads";
 
@@ -14,8 +15,10 @@ const storage = multer.diskStorage({
 const uploads = multer({ storage });
 
 /* GET home page. */
-router.get("/register", function (req, res, next) {
-  res.send("Registered");
-});
+router.post("/register", UserController.register);
+router.post("/login", UserController.login);
+router.get("/users/:id", UserController.getUserById);
+router.put("/users/:id", UserController.updateUser);
+router.get("/current", UserController.currentUser);
 
 module.exports = router;
