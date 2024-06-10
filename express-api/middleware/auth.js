@@ -11,6 +11,7 @@ const authToken = (req, res, next) => {
     return res.status(401).json({error: 'Unauthorized'})
 
   jwt.verify(token, process.env.SECRET_KEY, (err, user) => {
+    // console.log('user - ', user);
     if (err)
       res.status(403).json({error: 'Invalid token'})
 
