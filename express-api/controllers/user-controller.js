@@ -25,7 +25,6 @@ const UserController = {
       const png = jdenticon.toPng(name, 200);
       const avatarName = `${name}_${Date.now()}.png`;
       const avatarUrl = path.join(__dirname, "../uploads", avatarName);
-      fs.writeFileSync(avatarUrl, png);
 
       const user = await prisma.user.create({
         data: {
@@ -35,6 +34,7 @@ const UserController = {
           avatarUrl,
         },
       });
+      fs.writeFileSync(avatarUrl, png);
 
       return res.json(user);
     } catch (error) {
