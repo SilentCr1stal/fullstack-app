@@ -60,9 +60,9 @@ const PostController = {
     const authorId = req.user.userId;
     const { id } = req.params;
     try {
-      const post = await prisma.post.findFirst({
+      const post = await prisma.post.findUnique({
         where: {
-          AND: [{ id }, { authorId }],
+          id
         },
         include: {
           comments: {
@@ -71,11 +71,17 @@ const PostController = {
             },
           },
           likes: true,
-          author: true,
+          author: true
         },
       });
       if (!post) return res.status(404).json({ error: "Post does not found" });
-      res.json(post);
+
+      const postWithLikeInfo = {
+        ...post,
+        likedByUser: post.likes.some(like => like.userId === authorId)
+      }
+
+      res.json(postWithLikeInfo);
     } catch (error) {
       console.error("Error", error);
       res.status(500).json({ error: "Internal Server error" });
