@@ -3,6 +3,7 @@ const router = express.Router();
 const multer = require("multer");
 const UserController = require("../controllers/user-controller");
 const PostController = require('../controllers/post-controller')
+const CommentController = require('../controllers/comment-controller')
 const authToken = require("../middleware/auth");
 
 const destination = "uploads";
@@ -31,5 +32,12 @@ router.get('/posts', authToken, PostController.getAllPosts)
 router.get('/posts/:id', authToken, PostController.getPostById)
 router.put('/posts/:id', authToken, PostController.updatePost)
 router.delete('/posts/:id', authToken, PostController.deletePost)
+
+// Comments routers
+router.post('/comments', authToken, CommentController.createComment)
+router.get('/comments', authToken, CommentController.getAllComments)
+router.get('/comments/:id', authToken, CommentController.getCommentById)
+router.put('/comments/:id', authToken, CommentController.updateComment)
+router.delete('/comments/:id', authToken, CommentController.deleteComment)
 
 module.exports = router;

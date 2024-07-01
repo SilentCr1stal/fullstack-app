@@ -20,7 +20,7 @@ const PostController = {
           authorId,
         },
       });
-      res.json(post);
+      return res.json(post);
     } catch (error) {
       console.error("Error", error);
       res.status(500).json({ error: "Internal Server error" });
@@ -50,7 +50,7 @@ const PostController = {
           likedByUser: post.likes.some((like) => like.userId === authorId),
         };
       });
-      res.json(postsWithLikeUser);
+      return res.json(postsWithLikeUser);
     } catch (error) {
       console.error("Error", error);
       res.status(500).json({ error: "Internal Server error" });
@@ -62,7 +62,7 @@ const PostController = {
     try {
       const post = await prisma.post.findUnique({
         where: {
-          id
+          id,
         },
         include: {
           comments: {
@@ -71,17 +71,17 @@ const PostController = {
             },
           },
           likes: true,
-          author: true
+          author: true,
         },
       });
       if (!post) return res.status(404).json({ error: "Post does not found" });
 
       const postWithLikeInfo = {
         ...post,
-        likedByUser: post.likes.some(like => like.userId === authorId)
-      }
+        likedByUser: post.likes.some((like) => like.userId === authorId),
+      };
 
-      res.json(postWithLikeInfo);
+      return res.json(postWithLikeInfo);
     } catch (error) {
       console.error("Error", error);
       res.status(500).json({ error: "Internal Server error" });
@@ -113,7 +113,7 @@ const PostController = {
         },
       });
 
-      res.json(newPost);
+      return res.json(newPost);
     } catch (error) {
       console.error("Error", error);
       res.status(500).json({ error: "Internal Server error" });
@@ -124,12 +124,32 @@ const PostController = {
     const authorId = req.user.userId;
 
     try {
-      const post = await prisma.post.delete({
+      const post = await prisma.post.findUnique({
         where: {
           id,
         },
       });
-      res.json(post);
+
+      if (!post) return res.status(404).json({ error: "Post does not found" });
+
+      if (post.authorId !== authorId) {
+        res.status(403).json({error: 'No access rights'})
+      }
+
+      const transaction = await prisma.$transaction([
+        prisma.comment.deleteMany({ where: { postId: id } }),
+        prisma.like.deleteMany({ where: { postId: id } }),
+        prisma.post.delete({ where: { id } })
+      ])
+
+      return res.json(transaction)
+
+      // const post = await prisma.post.delete({
+      //   where: {
+      //     id,
+      //   },
+      // });
+      // res.json(post);
     } catch (error) {
       console.error("Error", error);
       res.status(500).json({ error: "Internal Server error" });
