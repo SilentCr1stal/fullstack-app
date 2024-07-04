@@ -35,9 +35,9 @@ router.delete('/posts/:id', authToken, PostController.deletePost)
 
 // Comments routers
 router.post('/comments', authToken, CommentController.createComment)
-router.get('/comments', authToken, CommentController.getAllComments)
-router.get('/comments/:id', authToken, CommentController.getCommentById)
-router.put('/comments/:id', authToken, CommentController.updateComment)
+// router.get('/comments/:id', authToken, CommentController.getAllComments)
+// router.get('/comments/:id', authToken, CommentController.getCommentById)
+// router.put('/comments/:id', authToken, CommentController.updateComment)
 router.delete('/comments/:id', authToken, CommentController.deleteComment)
 
 module.exports = router;
